@@ -1001,11 +1001,8 @@ class Medoo {
                             break;
 
                         case 'Object':
-                            $stack[$column_key] = unserialize($item);
-                            break;
-
                         case 'JSON':
-                            $stack[$column_key] = json_decode($item, true);
+                            $stack[$column_key] = json_decode($item);
                             break;
 
                         case 'String':
@@ -1141,17 +1138,12 @@ class Medoo {
 
                     switch ($type) {
                         case 'array':
+                        case 'object':
                             $map[$map_key] = [
-                                strpos($key, '[JSON]') === strlen($key) - 6 ?
-                                json_encode($value) :
-                                serialize($value),
+                                json_encode($value),
                                 PDO::PARAM_STR
                             ];
                             break;
-
-                        case 'object':
-                            $value = serialize($value);
-
                         case 'NULL':
                         case 'resource':
                         case 'boolean':
@@ -1201,17 +1193,12 @@ class Medoo {
 
                 switch ($type) {
                     case 'array':
+                    case 'object':
                         $map[$map_key] = [
-                            strpos($key, '[JSON]') === strlen($key) - 6 ?
-                            json_encode($value) :
-                            serialize($value),
+                            json_encode($value),
                             PDO::PARAM_STR
                         ];
                         break;
-
-                    case 'object':
-                        $value = serialize($value);
-
                     case 'NULL':
                     case 'resource':
                     case 'boolean':
