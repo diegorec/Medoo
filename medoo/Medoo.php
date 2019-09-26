@@ -27,9 +27,11 @@ class Medoo {
     protected $logging = false;
     protected $debug_mode = false;
     protected $guid = 0;
+    protected $databasename;
 
     public function __construct(array $options) {
         if (isset($options['database_type'])) {
+            $this->databasename = $options['database_name'];
             $this->type = strtolower($options['database_type']);
 
             if ($this->type === 'mariadb') {
@@ -1449,6 +1451,67 @@ class Medoo {
         $output['dsn'] = $this->dsn;
 
         return $output;
+    }
+    // Added by Diego Pêrez Gonda
+    public function getPrefix(): string {
+        return $this->prefix;
+    }
+
+    public function getDatabaseName(): string {
+        return $this->databasename;
+    }
+
+    public function call(string $procedure, Array $parametros, $mostrarQuery = false) {
+        $parametrosSQL = implode(", ", $parametros);
+        $sql = "call $this->prefix$procedure($parametrosSQL)";
+        if ($mostrarQuery) {
+            echo $sql;
+            exit();
+        }
+        $statement = $this->query($sql);
+        $datos = $statement->fetchAll();
+        $statement->closeCursor();
+        return $datos;
+    }
+
+    public function consulta(string $query, Array $columns = []) {
+        $queryConPrefijo = $this->addPrefixQuery($query);
+        $sub = $this->query($queryConPrefijo);
+        $datos = $sub;
+        if (is_object($sub)) {
+            $datos = $sub->fetchAll();
+            if (count($columns) > 0) {
+                $this->castDatos($datos, $columns);
+            }
+        }
+        return $datos;
+    }
+
+    public function castDatos($data, $columns) {
+        $column_map = [];
+        $map = $this->columnMap($columns, $column_map);
+        foreach ($data as $key => $value) {
+            $currentStack = [];
+            $currentType = gettype($value);
+            $this->dataMap((array) $value, $columns, $map, $currentStack);
+            settype($currentStack, $currentType);
+            $data[$key] = $currentStack;
+        }
+        return $data;
+    }
+
+    private function addPrefixQuery(string $query) {
+        $replacement = [];
+        $patrones = [];
+        $matches = [];
+        preg_match_all("/(FROM|JOIN) (\S+)/i", $query, $matches);
+
+        foreach ($matches[2] as $key => $tabla) {
+            $sql = $matches[1][$key];
+            $replacement[] = "$sql $this->prefix$tabla";
+            $patrones[] = "/$sql $tabla/";
+        }
+        return preg_replace($patrones, $replacement, $query);
     }
 
 }
