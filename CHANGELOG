@@ -1,0 +1,23 @@
+# Registro de cambios
+Todos los cambios de la aplicaion, se integraran en este docuemnto.
+
+
+# Nota
+Los tipos que se tendran encuenta en este registro son:
+
+
+```Added``` funcionalidades nuevas.
+```Changed``` cambios en las funcionalidades existentes.
+```Deprecated``` indicar que una característica o funcionalidad está obsoleta y que se eliminará en las próximas versiones.
+```Removed``` características en desuso que se eliminaron en esta versión.
+```Fixed``` corrección de errores.
+```Security``` vulnerabilidades.
+
+
+[0.1.0]
+# Added
+- Consultas a procedures de la base de datos
+- Añadir el prefijo de la base de datos automáticamente en la funcionalidad query
+
+# Changed
+- Se elimina la diferencia de datos entre object y array, ambos se codificarán y decodificarán con json_(en|de)code
