@@ -7,7 +7,7 @@ trait SchemaTrait {
     public function getDatabaseSchema() {
         return $this->query("SELECT
             substr(name, POSITION('$this->prefix' IN name) + LENGTH('$this->prefix')) name,
-            lower(type)
+            lower(type) type
             FROM (
                 -- TABLAS
                 (SELECT
