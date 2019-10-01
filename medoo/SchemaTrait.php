@@ -7,7 +7,7 @@ trait SchemaTrait {
     public function getDatabaseSchema() {
         return $this->query("SELECT
             substr(name, POSITION('$this->prefix' IN name) + LENGTH('$this->prefix')) name,
-            type
+            lower(type)
             FROM (
                 -- TABLAS
                 (SELECT
@@ -47,7 +47,7 @@ trait SchemaTrait {
                     column_name 'column',
                     data_type 'type',
                     CHARACTER_MAXIMUM_LENGTH size,
-                    IF (COLUMN_KEY = '', 'NO', 'SI') required
+                    IF (COLUMN_KEY = '', 0, 1) required
                 FROM information_schema.COLUMNS)
                 UNION ALL (SELECT
                     specific_schema db,
@@ -55,7 +55,7 @@ trait SchemaTrait {
                     parameter_name 'column',
                     data_type 'type',
                     CHARACTER_MAXIMUM_LENGTH size,
-                    'SI' required
+                    1 required
                 FROM information_schema.PARAMETERS
                 WHERE ROUTINE_TYPE = 'PROCEDURE')
             ) esquema
