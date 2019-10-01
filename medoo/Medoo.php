@@ -18,6 +18,8 @@ use InvalidArgumentException;
 
 class Medoo {
 
+    use SchemaTrait;
+
     public $pdo;
     protected $type;
     protected $prefix;
@@ -1452,6 +1454,7 @@ class Medoo {
 
         return $output;
     }
+
     // Added by Diego Pêrez Gonda
     public function getPrefix(): string {
         return $this->prefix;
